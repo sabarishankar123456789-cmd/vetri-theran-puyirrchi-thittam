@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>EduGenie AI Learning Assistant</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                E
+            </div>
+
+            <div>
+
+                <h2>EduGenie</h2>
+
+                <p>AI Learning Assistant</p>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="new-chat"
+            onclick="clearChat()">
+
+            + New Chat
+
+        </button>
+
+
+        <nav>
+
+            <a class="active">
+                🏠 Dashboard
+            </a>
+
+            <a onclick="focusChat()">
+                🤖 AI Tutor
+            </a>
+
+            <a onclick="showTools()">
+                📚 Study Tools
+            </a>
+
+        </nav>
+
+
+        <div class="powered">
+
+            <small>POWERED BY</small>
+
+            <strong>Google Gemini</strong>
+
+            <span>AI Learning Engine</span>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <header class="header">
+
+            <div>
+
+                <span class="welcome">
+                    WELCOME TO EDUGENIE
+                </span>
+
+                <h1>
+                    Learn smarter with AI.
+                </h1>
+
+                <p>
+                    Ask questions, create notes,
+                    generate quizzes and build study plans.
+                </p>
+
+            </div>
+
+
+            <div class="online">
+
+                <span></span>
+
+                AI Online
+
+            </div>
+
+        </header>
+
+
+        <!-- QUICK TOOLS -->
+
+        <section class="cards">
+
+            <div
+                class="card"
+                onclick="selectTask('explain')">
+
+                <div class="icon">
+                    💡
+                </div>
+
+                <h3>
+                    Explain a Topic
+                </h3>
+
+                <p>
+                    Understand any topic
+                    step-by-step.
+                </p>
+
+            </div>
+
+
+            <div
+                class="card"
+                onclick="selectTask('summary')">
+
+                <div class="icon">
+                    📚
+                </div>
+
+                <h3>
+                    Study Notes
+                </h3>
+
+                <p>
+                    Create simple revision notes.
+                </p>
+
+            </div>
+
+
+            <div
+                class="card"
+                onclick="selectTask('quiz')">
+
+                <div class="icon">
+                    🧠
+                </div>
+
+                <h3>
+                    Generate Quiz
+                </h3>
+
+                <p>
+                    Test your knowledge with AI.
+                </p>
+
+            </div>
+
+
+            <div
+                class="card"
+                onclick="selectTask('studyplan')">
+
+                <div class="icon">
+                    📅
+                </div>
+
+                <h3>
+                    Study Plan
+                </h3>
+
+                <p>
+                    Create a 7-day learning plan.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- CONTENT -->
+
+        <section class="content">
+
+
+            <!-- AI CHAT -->
+
+            <div class="chat-box">
+
+                <div class="chat-header">
+
+                    <div>
+
+                        <h2>
+                            AI Tutor
+                        </h2>
+
+                        <p>
+                            Ask EduGenie anything.
+                        </p>
+
+                    </div>
+
+                    <span class="model">
+                        Gemini AI
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="chatMessages"
+                    class="messages">
+
+                    <div class="message ai">
+
+                        <div class="avatar">
+                            E
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                EduGenie
+                            </strong>
+
+                            <p>
+                                Hi! 👋
+                                I'm your AI tutor.
+                                Ask me anything about your studies.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="input-area">
+
+                    <input
+                        id="question"
+                        type="text"
+                        placeholder="Ask a question..."
+                        onkeydown="handleEnter(event)"
+                    >
+
+                    <button onclick="sendQuestion()">
+
+                        Send
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- STUDY TOOLS -->
+
+            <div
+                class="tools"
+                id="studyTools">
+
+                <h2>
+                    Study Tools
+                </h2>
+
+                <p>
+                    Generate learning content with Gemini.
+                </p>
+
+
+                <label>
+                    Select Tool
+                </label>
+
+                <select id="task">
+
+                    <option value="explain">
+                        Explain Topic
+                    </option>
+
+                    <option value="summary">
+                        Study Notes
+                    </option>
+
+                    <option value="quiz">
+                        Generate Quiz
+                    </option>
+
+                    <option value="studyplan">
+                        7-Day Study Plan
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Enter Topic
+                </label>
+
+                <input
+                    id="topic"
+                    type="text"
+                    placeholder="Example: Cybersecurity"
+                >
+
+
+                <button
+                    class="generate"
+                    onclick="generateContent()">
+
+                    Generate with Gemini ✦
+
+                </button>
+
+
+                <div
+                    id="result"
+                    class="result">
+
+                    Generated content
+                    will appear here.
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+function addMessage(type, text) {
+
+    const messages =
+        document.getElementById("chatMessages");
+
+    const message =
+        document.createElement("div");
+
+    message.className =
+        "message " + type;
+
+    const avatar =
+        type === "ai" ? "E" : "Y";
+
+    message.innerHTML = `
+
+        <div class="avatar">
+            ${avatar}
+        </div>
+
+        <div>
+
+            <strong>
+                ${type === "ai"
+                    ? "EduGenie"
+                    : "You"}
+            </strong>
+
+            <p>
+                ${text.replace(/\n/g, "<br>")}
+            </p>
+
+        </div>
+
+    `;
+
+    messages.appendChild(message);
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+
+async function sendQuestion() {
+
+    const input =
+        document.getElementById("question");
+
+    const question =
+        input.value.trim();
+
+    if (!question) {
+
+        return;
+
+    }
+
+    input.value = "";
+
+    addMessage(
+        "user",
+        question
+    );
+
+    addMessage(
+        "ai",
+        "Thinking..."
+    );
+
+    try {
+
+        const response =
+            await fetch(
+                "/chat",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        question: question
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        const messages =
+            document.getElementById(
+                "chatMessages"
+            );
+
+        messages.lastElementChild.remove();
+
+
+        addMessage(
+            "ai",
+            data.answer
+        );
+
+    }
+
+    catch (error) {
+
+        const messages =
+            document.getElementById(
+                "chatMessages"
+            );
+
+        messages.lastElementChild.remove();
+
+
+        addMessage(
+            "ai",
+            "Unable to connect to Gemini."
+        );
+
+    }
+
+}
+
+
+function handleEnter(event) {
+
+    if (event.key === "Enter") {
+
+        sendQuestion();
+
+    }
+
+}
+
+
+async function generateContent() {
+
+    const topic =
+        document.getElementById(
+            "topic"
+        ).value.trim();
+
+
+    const task =
+        document.getElementById(
+            "task"
+        ).value;
+
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+
+    if (!topic) {
+
+        result.innerText =
+            "Please enter a topic.";
+
+        return;
+
+    }
+
+
+    result.innerText =
+        "Generating with Gemini...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/generate",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        topic: topic,
+
+                        task: task
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        result.innerHTML =
+            data.answer.replace(
+                /\n/g,
+                "<br>"
+            );
+
+    }
+
+    catch (error) {
+
+        result.innerText =
+            "Something went wrong.";
+
+    }
+
+}
+
+
+function selectTask(task) {
+
+    document.getElementById(
+        "task"
+    ).value = task;
+
+
+    document.getElementById(
+        "studyTools"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
+
+
+    document.getElementById(
+        "topic"
+    ).focus();
+
+}
+
+
+function showTools() {
+
+    document.getElementById(
+        "studyTools"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+
+function focusChat() {
+
+    document.getElementById(
+        "question"
+    ).focus();
+
+}
+
+
+function clearChat() {
+
+    document.getElementById(
+        "chatMessages"
+    ).innerHTML = `
+
+        <div class="message ai">
+
+            <div class="avatar">
+                E
+            </div>
+
+            <div>
+
+                <strong>
+                    EduGenie
+                </strong>
+
+                <p>
+                    New chat started.
+                    What would you like to learn?
+                </p>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+</script>
+
+</body>
+
+</html>
